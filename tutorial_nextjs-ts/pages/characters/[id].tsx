@@ -1,7 +1,10 @@
+//Starts at 16:00 in video
 import { Character, GetCharacterResults } from "../../types";
 import Image from "next/image";
 import imageLoader from "../../imageLoader";
+import { GetServerSideProps } from "next";
 
+//this is our ACTUAL function that will run after the async ones
 function CharacterPage({character}:{
     character: Character
 }) {
@@ -18,21 +21,16 @@ return <div>Character Page
     </div>
 }
 
-export async function getStaticPaths(){
-    const res = await fetch("https://rickandmortyapi.com/api/character");
-    const { results }:GetCharacterResults = await res.json();
+//Get rid of getstatic paths
 
-    //returning a new object
-    return{
-        paths: results.map((character) => {
-            return  { params: {id: String(character.id)}}
-        })
-    }
-}
+//update to serversideprops; changed to anon function to make typing easier; Typings from the anon function gives some typings to context
+export const getServerSideProps:GetServerSideProps = async (context) => {
+    const res = await fetch
+    (`https://rickandmortyapi.com/api/character/${context.query.id}`
+    );
+    const character = await res.json();
 
-export async function getStaticProps({params}:{ params: {id: String}}) {
-    const res = await fetch(`https://rickandmortyapi.com/api/${params.id}`);
-    const character = res.json();
+
     return {
         props:{
             character
